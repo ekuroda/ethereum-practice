@@ -1,0 +1,48 @@
+# 最初のノード起動
+
+$ mkdir mygeth
+$ sudo geth account new --datadir mygeth
+# 出力のAddressをメモ
+
+$ sudo geth --datadir mygeth init ./genesis.json
+
+$ geth --datadir mygeth --networkid 8956 --ipcdisable \
+--port 30307 --rpc --rpcapi "eth,web3,personal,net,miner,admin,dubug" --rpcport 8507 \
+--allow-insecure-unlock --rpcaddr "localhost" --nodiscover --rpccorsdomain "*" console --mine \
+--miner.threads=1 --miner.etherbase=0x48Dc28D975bfbDC973aF86D2C4fe3C9239776Dd4
+
+# 出力されるログの enode://... をメモ
+
+# 別端末からノード起動
+
+$ mkdir mygeth2
+$ sudo geth --datadir mygeth2 init ./genesis.json
+$ geth --datadir mygeth2 --networkid 8956 --ipcdisable \
+--port 30308 --rpc --rpcapi "eth,web3,personal,net,miner,admin,dubug" --rpcport 8508 \
+--allow-insecure-unlock --rpcaddr "localhost" --nodiscover --rpccorsdomain "*" console
+> admin.AddPeer("enode://...")
+> admin.peers
+
+# 別端末でアプリ実行
+
+$ PASS=test node
+> eth = require("./ethereum.js")
+> eth.unlockAccount(process.env.PASS)
+> eth.deployContract()
+
+# 出力中の_addressをetherium.jsのpollContractAddressに設定
+
+$ PASS=test node
+> eth = require("./ethereum.js")
+> eth.getPoll()
+undefined
+> subject: コーヒーは非課税にするべきだと思いますか？賛成なら1を、反対なら2をvote関数関数に渡します。
+> eth.checkPoll()
+undefined
+> voted to:0
+> eth.submitVote(1)
+undefined
+vote result:[object Object]
+> eth.checkPoll()
+undefined
+> voted to:1
